@@ -1,26 +1,18 @@
-// src/app/api/parseMessage/route.ts
-
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
-    // ★★後削除
-    console.log("✅ route.ts の POST 関数が呼ばれました");
     try {
         const { prompt } = await req.json();
-        // ★★後削除
-        console.log("送信前:", prompt);
 
         const response = await fetch(
             "https://asia-northeast1-seiri-renraku-next-31ac1.cloudfunctions.net/parseMessage",
             {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ text: prompt }),
+                body: JSON.stringify({ prompt }),
             }
         );
 
-        // ★★後削除
-        console.log("送信後:", response.status);
 
         if (!response.ok) {
             console.error("Cloud Functions API error:", response.statusText);

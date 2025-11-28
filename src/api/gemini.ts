@@ -2,8 +2,8 @@
 
 import type { ParsedMessage } from "../types/message";
 
-const URL =
-    "https://asia-northeast1-seiri-renraku-next-31ac1.cloudfunctions.net/parseMessage";
+// Vercelデプロイ後も安全なNext.js API経由のURL
+const URL = "/api/parseMessage";
 
 export const callParseMessage = async (text: string): Promise<ParsedMessage> => {
     const response = await fetch(URL, {
@@ -16,9 +16,9 @@ export const callParseMessage = async (text: string): Promise<ParsedMessage> => 
 
     if (!response.ok) {
         const err = await response.text();
-        console.error("Cloud Functions Error:", err);
-        throw new Error("Cloud Functions request failed");
+        console.error("API Error:", err);
+        throw new Error("API request failed");
     }
 
-    return response.json() as Promise<ParsedMessage>;
+    return response.json();
 };
