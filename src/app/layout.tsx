@@ -42,16 +42,16 @@ function LayoutEffectWrapper() {
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="ja">
-      <Providers>
-        <body>
+      <body>
+        <Providers>
           <LayoutEffectWrapper />
           <div className="min-h-screen flex flex-col">
             <Header />
             <main className="grow p-4">{children}</main>
             <Footer />
           </div>
-        </body>
-      </Providers>
+        </Providers>
+      </body>
     </html>
   );
 }
