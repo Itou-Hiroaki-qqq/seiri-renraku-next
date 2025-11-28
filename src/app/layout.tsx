@@ -20,7 +20,6 @@ function LayoutEffectWrapper() {
     (async () => {
       try {
         await ensureSignedInAnonymously();
-
         await messageStore.loadMessages();
 
         // @ts-ignore
@@ -41,17 +40,17 @@ function LayoutEffectWrapper() {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="ja">
-      <body>
-        <Providers>
+    <Providers>
+      <html lang="ja">
+        <body>
           <LayoutEffectWrapper />
           <div className="min-h-screen flex flex-col">
             <Header />
             <main className="grow p-4">{children}</main>
             <Footer />
           </div>
-        </Providers>
-      </body>
-    </html>
+        </body>
+      </html>
+    </Providers>
   );
 }
