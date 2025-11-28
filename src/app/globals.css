@@ -1,26 +1,39 @@
 @import "tailwindcss";
+@plugin "daisyui";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* -----------------------------------
+  Header のアニメーション
+----------------------------------- */
+
+/* 右からスライドインアニメーション */
+.slide-enter-from {
+  transform: translateX(100%);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+.slide-enter-active {
+  transition: transform 0.3s ease-in-out;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.slide-enter-to {
+  transform: translateX(0);
 }
 
+.slide-leave-from {
+  transform: translateX(0);
+}
+
+.slide-leave-active {
+  transition: transform 0.3s ease-in-out;
+}
+
+.slide-leave-to {
+  transform: translateX(100%);
+}
+
+/* -----------------------------------
+  ベーススタイル
+----------------------------------- */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #ffffff;
+  color: #171717;
 }

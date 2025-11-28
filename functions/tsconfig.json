@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "target": "es2020",             // より新しいJS構文対応
+    "module": "commonjs",           // Firebase Functions用
+    "lib": ["es2020"],              // 標準ライブラリ
+    "strict": true,                 // 厳格な型チェック
+    "esModuleInterop": true,        // default importの互換
+    "moduleResolution": "node",     // Nodeモジュール解決
+    "sourceMap": true,              // mapファイル出力
+    "outDir": "lib",                // 出力先
+    "noImplicitReturns": true,      // return漏れ警告
+    "noUnusedLocals": true,         // 未使用変数警告
+    "types": ["node"]               // Node.js型を使えるように
+  },
+  "compileOnSave": true,
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}
