@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "clean": "Remove-Item -Recurse -Force .next"
   },
   "dependencies": {
     "daisyui": "^5.5.5",
