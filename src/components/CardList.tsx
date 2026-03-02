@@ -2,14 +2,21 @@
 
 import { useEffect, useMemo } from "react";
 import { useMessageStore } from "../stores/messageStore";
-import type { DatedMessage, UndatedMessage } from "../types/message";
+import type { DatedWithId, UndatedWithId } from "../stores/messageStore";
+
+type DateGroup = {
+    date: string;
+    "2年生": DatedWithId[];
+    "4年生": DatedWithId[];
+    "全体": DatedWithId[];
+};
 
 export default function CardList() {
     const messageStore = useMessageStore();
 
     // 日付ありメッセージのグループ化
     const groupedByDate = useMemo(() => {
-        const grouped: Record<string, any> = {};
+        const grouped: Record<string, DateGroup> = {};
 
         for (const msg of messageStore.datedMessages) {
             if (!grouped[msg.date]) {
@@ -25,7 +32,6 @@ export default function CardList() {
             grouped[msg.date][gradeKey].push(msg);
         }
 
-        // 昇順ソート
         return Object.values(grouped).sort((a, b) =>
             a.date.localeCompare(b.date)
         );
@@ -38,7 +44,7 @@ export default function CardList() {
     };
 
     // 日付なし削除
-    const deleteUndated = async (msg: UndatedMessage) => {
+    const deleteUndated = async (msg: UndatedWithId) => {
         if (confirm("本当に削除しますか？")) {
             await messageStore.deleteUndatedMessage(msg);
             alert("削除しました");
@@ -46,7 +52,7 @@ export default function CardList() {
     };
 
     // 日付あり削除
-    const deleteDated = async (msg: DatedMessage) => {
+    const deleteDated = async (msg: DatedWithId) => {
         if (confirm("本当に削除しますか？")) {
             await messageStore.deleteDatedMessage(msg);
             alert("削除しました");
@@ -54,39 +60,33 @@ export default function CardList() {
     };
 
     // 過去倉庫へ移動
-    const moveToPast = async (msg: DatedMessage) => {
+    const moveToPast = async (msg: DatedWithId) => {
         if (confirm("このカードを過去倉庫へ移動しますか？")) {
             await messageStore.moveOneDatedToPast(msg);
             alert("「過去の日程あり連絡倉庫」に移動しました！");
         }
     };
 
-    // 日付ごと削除処理
+    // 日付ごと一括削除（store の deleteDatedGroup を使用）
     const deleteWholeDateGroup = async (date: string) => {
         if (confirm(`日付 ${date} の全ての連絡を削除しますか？`)) {
-            const targets = messageStore.datedMessages.filter(
-                (m: any) => m.date === date
-            );
-
-            for (const msg of targets) {
-                await messageStore.deleteDatedMessage(msg);
-            }
-
+            await messageStore.deleteDatedGroup(date);
             alert(`日付 ${date} の全てのカードを削除しました。`);
         }
     };
 
-    // Vue: onMounted(() => messageStore.movePastDatedMessages())
+    // 初回マウント時のみ過去メッセージの自動アーカイブを実行
     useEffect(() => {
         messageStore.movePastDatedMessages();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     return (
         <div className="max-w-3xl mx-auto mt-6 space-y-6">
             {/* 日付なし連絡 */}
-            {messageStore.undatedMessages.map((msg: any, i: number) => (
+            {messageStore.undatedMessages.map((msg: UndatedWithId, i: number) => (
                 <div
-                    key={`u-${i}`}
+                    key={msg._docId ?? `u-${msg.title}-${i}`}
                     className="bg-yellow-50 shadow rounded-lg p-4"
                 >
                     <h2 className="font-bold text-lg">{msg.title}</h2>
@@ -127,9 +127,9 @@ export default function CardList() {
             ))}
 
             {/* 日付あり連絡 */}
-            {groupedByDate.map((dateGroup: any, index: number) => (
+            {groupedByDate.map((dateGroup: DateGroup) => (
                 <div
-                    key={index}
+                    key={dateGroup.date}
                     className="bg-white shadow-lg rounded-lg p-4 border border-gray-300 relative"
                 >
                     <h2 className="text-2xl font-extrabold text-gray-800 mb-4 border-b pb-1">
@@ -137,7 +137,7 @@ export default function CardList() {
                     </h2>
 
                     {/* 学年ごと */}
-                    {["2年生", "4年生", "全体"].map((grade) => (
+                    {(["2年生", "4年生", "全体"] as const).map((grade) => (
                         <div key={grade} className="mb-4">
                             <h3 className="font-semibold text-gray-700">
                                 {grade}への連絡
@@ -147,9 +147,9 @@ export default function CardList() {
                                 <div className="text-gray-400 text-sm">（なし）</div>
                             )}
 
-                            {dateGroup[grade].map((msg: any, i: number) => (
+                            {dateGroup[grade].map((msg: DatedWithId) => (
                                 <div
-                                    key={i}
+                                    key={msg._docId ?? `${msg.date}-${msg.title}`}
                                     className="border rounded p-3 mt-2 bg-gray-50"
                                 >
                                     <p>

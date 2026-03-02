@@ -7,6 +7,7 @@ import { callParseMessage } from "../api/gemini";
 
 export default function InputForm() {
     const [inputText, setInputText] = useState("");
+    const [isLoading, setIsLoading] = useState(false);
     const messageStore = useMessageStore();
 
     /**
@@ -18,6 +19,7 @@ export default function InputForm() {
             return;
         }
 
+        setIsLoading(true);
         try {
             const parsed: ParsedMessage = await callParseMessage(inputText);
 
@@ -32,6 +34,8 @@ export default function InputForm() {
         } catch (e) {
             console.error("Gemini API 呼び出し失敗:", e);
             alert("解析に失敗しました");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -45,23 +49,12 @@ export default function InputForm() {
             return;
         }
 
-        // 先頭行をタイトルに使用
         const lines = raw.split("\n").filter(Boolean);
         const title = (lines[0] ?? "タイトル未設定").slice(0, 60);
         const detail = raw;
         const summary = detail.length > 60 ? detail.slice(0, 60) + "…" : detail;
 
-        // Firestore ルール適合の完全フィールド構成
-        const payload: UndatedMessage & {
-            type: "undated";
-            date: null;
-            grade: null;
-            place: null;
-            startTime: null;
-            endTime: null;
-            uniform: null;
-            items: null;
-        } = {
+        const payload: UndatedMessage = {
             title,
             summary,
             detail,
@@ -76,6 +69,7 @@ export default function InputForm() {
             items: null,
         };
 
+        setIsLoading(true);
         try {
             await messageStore.addUndatedMessage(payload);
             alert("日付なしカードとして追加しました！");
@@ -83,6 +77,8 @@ export default function InputForm() {
         } catch (err) {
             console.error("Firestore 書き込みエラー:", err);
             alert("Firestoreへの保存に失敗しました（権限エラーの可能性）");
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -108,17 +104,19 @@ export default function InputForm() {
                 {/* Gemini API 経由 */}
                 <button
                     onClick={handleSubmit}
-                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+                    disabled={isLoading}
+                    className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    整理（Gemini）
+                    {isLoading ? "処理中..." : "整理（Gemini）"}
                 </button>
 
                 {/* 手動で日付なしカード追加 */}
                 <button
                     onClick={addUndatedManually}
-                    className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition"
+                    disabled={isLoading}
+                    className="bg-yellow-500 text-white px-4 py-2 rounded-lg hover:bg-yellow-600 transition disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    日付なしカードで追加
+                    {isLoading ? "処理中..." : "日付なしカードで追加"}
                 </button>
             </div>
         </div>

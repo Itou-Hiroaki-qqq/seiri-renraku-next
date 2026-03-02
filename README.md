@@ -55,9 +55,13 @@ NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
 NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_project_id.appspot.com
 NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
 NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
+CLOUD_FUNCTIONS_PARSE_URL=https://YOUR_REGION-YOUR_PROJECT_ID.cloudfunctions.net/parseMessage
 ```
 
-※ Firebase コンソールの「プロジェクトの設定」→「一般」→「マイアプリ」から取得できます。
+- Firebase の設定値は、Firebase コンソールの「プロジェクトの設定」→「一般」→「マイアプリ」から取得できます。
+- `CLOUD_FUNCTIONS_PARSE_URL` には、デプロイ済みの Cloud Functions エンドポイント URL を設定してください（`NEXT_PUBLIC_` は不要なサーバー側専用の変数です）。
+
+**Vercel にデプロイする場合は、Vercel ダッシュボードの `Settings` → `Environment Variables` にも同じ変数を登録してください。**
 
 ### 3. 開発サーバーの起動
 
@@ -74,7 +78,7 @@ npm run dev
 | `npm run dev` | 開発サーバー起動（ホットリロード） |
 | `npm run build` | 本番用ビルド |
 | `npm run start` | 本番ビルドの実行（`build` 後） |
-| `npm run clean` | `.next` ディレクトリの削除（PowerShell） |
+| `npm run clean` | `.next` ディレクトリの削除（クロスプラットフォーム対応） |
 
 ## プロジェクト構成（抜粋）
 
